@@ -72,7 +72,7 @@ void loop()
     //delay(15000);
     digitalWrite(GREEN_LED,true); //transmit done
     //delay(15000);
-    Serial.println("ATE0\r"); //stop echos
+    //Serial.println("ATE0\r"); //stop echos
     //flushRecieve();
     //Serial.println("AT+CMGR=12\r");
     //readFullLine();
@@ -113,7 +113,8 @@ void loop()
       flash(RED_LED);
     }*/
     
-    /* working gps
+    
+    //working gps
     flushRecieve();
     //sendAndExpect("AT+CGPSPWR=1","OK"); //consumes OK
     Serial.println("AT+CPGPSPWR=1\r");
@@ -121,17 +122,27 @@ void loop()
     Serial.println("WAIT=60\r");
     flushRecieve();
     Serial.println("AT+CGPSINF=0\r");
-    //Serial.println("AT+CGPSSTATUS?\r");
+    Serial.println("AT+CGPSSTATUS?\r");
     String str = rx();
     //String str = readFullLine();
-    a.sendSMS(str,"16144600335");*/
+    a.sendSMS(str,"16144600335");
     
+    /*
+    // working theft gps
     flushRecieve();
     Serial.println("AT+CPGPSPWR=1\r");
     Serial.println("AT+CGPSRST=0\r");
     Serial.println("WAIT=60\r");
     flushRecieve();
-    pingTheft();
+    pingTheft();*/
+    
+    /* working grab number of texts
+    flushRecieve();
+    Serial.println("AT+CPMS?");
+    String response = rx();
+    int num = processNumSMSString(response);
+    String r = String(num);
+    a.sendSMS(r,"16144600335");*/
     
     while(1){}
 }
@@ -498,5 +509,30 @@ String processGPSString(String gpsRet)
   latitude = temp2.substring(0,index2);
   return "Last seen at: Longitude: " +longitude + " Latitude: " + latitude;
   }
+  
+int processNumSMSString(String response)
+{
+  int index = response.indexOf(','); //first comma
+  String temp = response.substring(index+1); //here to end
+  int index2 = temp.indexOf(','); //next comma
+  temp = temp.substring(0,index2); //grab number, do not include comma
+  //grab integer from string
+  int num = 0;
+  for(int i = 0; i<temp.length(); i++)
+  {
+    char c = temp.charAt(i); //grab character
+    if(i < temp.length() - 1)
+    {
+      //if there are more characters to read afterwords
+      num = num + (c - '0'); //convert to integer
+      num *= 10; //get ready for the next number
+    }
+    else
+    {
+      num += (c - '0'); 
+    }
+  }
+  return num; 
+}
 
 
