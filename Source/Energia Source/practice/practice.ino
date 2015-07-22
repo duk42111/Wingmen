@@ -113,7 +113,7 @@ void loop()
       flash(RED_LED);
     }*/
     
-    
+    /*
     //working gps
     flushRecieve();
     //sendAndExpect("AT+CGPSPWR=1","OK"); //consumes OK
@@ -125,7 +125,7 @@ void loop()
     Serial.println("AT+CGPSSTATUS?\r");
     String str = rx();
     //String str = readFullLine();
-    a.sendSMS(str,"16144600335");
+    a.sendSMS(str,"16144600335");*/
     
     /*
     // working theft gps
@@ -136,7 +136,7 @@ void loop()
     flushRecieve();
     pingTheft();*/
     
-    /* working grab number of texts
+    /*working grab number of texts
     flushRecieve();
     Serial.println("AT+CPMS?");
     String response = rx();

@@ -1,4 +1,5 @@
 #include <gsm.h>
+#include <Motion.h>
 
 boolean firstTimeTheft = true;
 boolean firstTimeStop = true;
@@ -8,8 +9,10 @@ int numberOfTexts = 0;
 long checkerForSMS = 10000; //check every 10 seconds for a text
 long globalStartTime = 0;
 Gsm gsm = Gsm();
+motion accel = motion();
 void setup()
 {
+  accel.setupMPU6050();
   gsm.startGSM(9600);
   delay(5000); //let it start up
   numberOfTexts = gsm.getNumSMS(); //need to grab initial  
@@ -23,10 +26,10 @@ void loop()
   {
     if(firstTimeTheft)
     {
-      //startTheftRead
+      accel.runTheftSetup();
       firstTimeTheft = !firstTimeTheft;
     } 
-    if(theftDetected())
+    if(accel.motionDetected())
     {
       bool retrieved = false;
       gsm.startGPS();
@@ -38,9 +41,19 @@ void loop()
         if(numCheck > numberOfTexts)
         {
           numberOfTexts = numCheck;
-          retrieved = gsm.checkForUnlock(numberOfTexts) ;
+          bool check =  gsm.checkForUnlock(numberOfTexts);
+          String ret = "";
+          if(check){
+             ret = "RETRIEVED";
           //if false, this text is not an unlock text, ping theft again and wait for next text 
-        }
+          }  
+          else
+          {
+            ret = "BIKE STILL IN MOTION";
+          }
+          gsm.sendSMS(ret,masterPhoneNumber);
+
+      }
       } 
     }
     else
@@ -51,9 +64,11 @@ void loop()
       if(numCheck > numberOfTexts)
       {
         numberOfTexts = numCheck;
-        if(gsm.checkForUnlock(numberOfTexts))
+        bool check = gsm.checkForUnlock(numberOfTexts);
+        String ret = "";
+        if(check)
         {
-
+          ret = "LET'S RIDE";
           LOCKED = !LOCKED;
 
           firstTimeStop = true; //allow for stop reads to happen
@@ -63,7 +78,11 @@ void loop()
           //flushReceive(LONGTIME); //to make read easy
 
         }   
-
+        else
+        {
+          ret = "NO RIDE";
+        }
+         gsm.sendSMS(ret,masterPhoneNumber);
       }
 
     }
@@ -82,13 +101,13 @@ void loop()
 
       firstTimeStop = !firstTimeStop; 
 
-      setUpStop();
+      accel.runSafetySetup();
 
     }
 
-    stopAndGoLightsFunction(); 
+    accel.checkForStop(); 
 
-    if(crashDetected())
+    if(accel.crashDetected())
 
     {
 
@@ -108,7 +127,7 @@ void loop()
 
           //loop dies if 6 seconds have passed or realstop is true
 
-        if(detectStop())
+        if(accel.stopDetected())
 
         {
 
@@ -130,7 +149,7 @@ void loop()
 
         {
 
-          if(!stopDetected())
+          if(!accel.stopDetected())
 
           {
 
@@ -166,7 +185,7 @@ void loop()
 
     //only check for this if it is stopped!
 
-    if(stopped && (millis() - globalStartTime > checkerForSMS))
+    if(accel.stopDetected() && (millis() - globalStartTime > checkerForSMS))
 
     {
 
@@ -181,15 +200,18 @@ void loop()
       {
 
         numberOfTexts = numCheck;
-
-        if(gsm.checkForLock(numberOfTexts))
-
-        {
-
+        bool check =  gsm.checkForLock(numberOfTexts);
+        String ret = "";
+        if(check){
+          ret = "RIDE OVER";
           LOCKED = !LOCKED; //flips
-
           firstTimeTheft = true; //can now check for theft
-
+        }
+        else
+        {
+          ret = "NOT DONE RIDING?";
+        }
+        gsm.sendSMS(ret,masterPhoneNumber);
         } 
 
       }
@@ -200,7 +222,7 @@ void loop()
 
   }
 
-}  
+
 
 
 
