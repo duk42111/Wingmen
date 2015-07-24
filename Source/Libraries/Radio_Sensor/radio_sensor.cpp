@@ -9,7 +9,7 @@ void Radio_Sensor::startRadioSensor()
 {
 	Radio.begin(ADDRESS_LOCAL, CHANNEL_1, POWER_MAX);
 	messagePacket.from = 'S';
-	memset(messagePacket, 0 ,sizeof(messagePacket.message));
+	memset(messagePacket.message, 0 ,sizeof(messagePacket.message));
 
 }
 
@@ -23,5 +23,5 @@ void Radio_Sensor::startRadioSensor()
 void Radio_Sensor::sendMessage(char action)
 {
 	messagePacket.message[0] = action;
-	Radio.transmit(ADDRESS_REMOTE, (unsigned char*)*messagePacket, sizeof(messagePacket));
+	Radio.transmit(ADDRESS_REMOTE, (unsigned char*)&messagePacket, sizeof(messagePacket));
 }

@@ -54,26 +54,31 @@ void loop()
   gsm.sendSMS(ret,masterPhoneNumber);*/
   
   //works
-  /*numSMS = gsm.getNumSMS();
+  numSMS = gsm.getNumSMS();
   gsm.flushReceive(flushTime);
   String number = String(numSMS);
   String command = "AT+CMGR="+number+"\r";
   Serial.print(command);
   delay(1000);
-  String ret = rxChar();
-    gsm.sendSMS(ret,masterPhoneNumber);*/
+  //String ret = rxChar();
+  String ret = gsm.grabAllResponse(responseTime);
+  gsm.sendSMS(ret,masterPhoneNumber);
+
     
-    /* working with main
+    // working with main
+    /*
     numSMS = gsm.getNumSMS();
      bool check =  gsm.checkForUnlock(numSMS);
      String ret = "NO RIDE";
      if(check)
        ret = "LET'S RIDE";
-        gsm.sendSMS(ret,masterPhoneNumber);*/ 
+        gsm.sendSMS(ret,masterPhoneNumber);*/
         
-        /* works gps
-        gsm.startGPS();
+        // works gps
+        /*gsm.startGPS();
         gsm.pingTheft(60000);*/
+        
+
 
 
   while(1){}

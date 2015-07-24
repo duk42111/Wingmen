@@ -8,9 +8,16 @@
 //8 for 432
 
 
+#define flushTime  15000
+#define responseTime  15000
+#define masterPhoneNumber "16144600335"
+
 class Gsm {
 
+	
+
 	public:
+
 		/*
 		 * SMS Functions
 		 * Note: Using Energia String definition here
@@ -19,13 +26,14 @@ class Gsm {
 		void readSMSFromList(int textNumber);
 		void readSMSFromNumber(char* phoneNumber);
 		int getNumSMS();
+		String getSMSresponse();
 
 
 		/*
 		 * GPS Functions
 		 *
 		 */
-		void getLocation();
+		void pingTheft(long interval);
 
 
 		/*
@@ -33,9 +41,24 @@ class Gsm {
 		 *
 		 */
 		void startGSM(int baud);
-		void unlockBikeMaster();
-		void unlockBikeTemp();
+		void startGPS();
+		void stopGPS();
+		bool checkForUnlock(int numberOfTexts);
+		bool checkForLock(int numberOfTexts);
+		void flushReceive(long time);
 		void generateTempPass();
+
+				String grabAllResponse(long time);
+
+
+		String receiveToChar(char c);
+
+
+	private:
+		int processNumSMSString(String response);
+		String processGPSString(String gpsRet);
+		//String grabAllResponse(long time);
+		bool sendAndExpect(String toSend, String toGet);
 };
 
 #endif
