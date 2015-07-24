@@ -39,7 +39,7 @@ void motion::setupMPU6050()
   digitalWrite(_MPU6050_power, LOW);
   Serial.begin(DEBUG_BAUD); // DEBUGGING ONLY
   pinMode(_button_pin, INPUT_PULLUP);
-  //pinMode(_MPU6050_power, OUTPUT);
+  pinMode(_MPU6050_power, OUTPUT);
   Wire.begin();
 }
 

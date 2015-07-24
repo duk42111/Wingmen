@@ -11,7 +11,7 @@
 
 boolean firstTimeTheft = true;
 boolean firstTimeStop = true;
-boolean LOCKED = true
+boolean LOCKED = true;
 boolean crashed = false;
 
 /***INFORMATION VARIABLES***/
