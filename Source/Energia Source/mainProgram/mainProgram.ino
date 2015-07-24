@@ -5,7 +5,7 @@
 #include <gsm.h>
 #include "Motion.h"
 #include <Wire.h>
-
+#include <radio_sensor.h>
 
 /***TRIGGER VARIABLES***/
 
@@ -26,6 +26,7 @@ long crashTime = 0;
 /***DEVICE OBJECTS***/
 Gsm gsm = Gsm();
 motion accel = motion(); //MPU6050
+Radio_Sensor radio = Radio_Sensor(); //C110L
 
 void setup()
 {
@@ -150,6 +151,7 @@ void loop()
        { 
             gsm.pingGPSCrash(60000,lovedOneNumber);
             digitalWrite(BLUE_LED,LOW);
+            radio.sendMessage('H'); //send Hazard Light Signal
        } 
     }
     
@@ -160,6 +162,7 @@ void loop()
     {
        if(accel.stopDetected())
        {
+         radio.sendMessage('B'); //send brake light message
          stopGet = true;
          break; 
        }
@@ -179,6 +182,7 @@ void loop()
        }
        else
        { 
+         radio.sendMessage('B');
          fullStop = true;   
        }
          
