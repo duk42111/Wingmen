@@ -8,7 +8,7 @@
 
 #define flushTime  15000
 #define responseTime  15000
-#define masterPhoneNumber "16144600335"
+#define masterPhoneNumber "5862918433"
 #define lovedOneNumber "5862918433"
 
 class Gsm {
@@ -30,8 +30,8 @@ class Gsm {
 		 * GPS Functions
 		 *
 		 */
-		void pingGPS(long interval, String phoneNumber);
-
+		void pingGPSTheft(long interval, String phoneNumber);
+		void pingGPSCrash(long interval, String phoneNumber);
 
 		/*
 		 * Tools
@@ -49,7 +49,8 @@ class Gsm {
 	private:
 		bool sendAndExpect(String toSend, String toGet);
 		int processNumSMSString(String response);
-		String processGPSString(String gpsRet);
+		String processGPSStringTheft(String gpsRet);
+		String processGPSStringCrash(String gpsRet);
 		String grabAllResponse(long time);
 		String receiveToChar(char c);
 };

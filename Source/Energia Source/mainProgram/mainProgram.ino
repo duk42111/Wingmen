@@ -77,7 +77,7 @@ void loop()
       gsm.startGPS();
       while(!retrieved)
       {
-        gsm.pingTheft(60000, masterPhoneNumber);
+        gsm.pingGPSTheft(60000, masterPhoneNumber);
       } 
     }
     else{
@@ -144,12 +144,12 @@ void loop()
     if(crashDetect)
     {
        //when a crash occures, send out gps ping's to helper phone number
+       digitalWrite(BLUE_LED,HIGH);
+       gsm.startGPS();
        while(1)
-       {
-            //digitalWrite(BLUE_LED,HIGH);
-            gsm.startGPS();
-            gsm.pingTheft(60000,lovedOneNumber);
-            //digitalWrite(BLUE_LED,LOW);
+       { 
+            gsm.pingGPSCrash(60000,lovedOneNumber);
+            digitalWrite(BLUE_LED,LOW);
        } 
     }
     

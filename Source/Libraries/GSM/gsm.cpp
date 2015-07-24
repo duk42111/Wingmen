@@ -119,7 +119,7 @@ bool Gsm::sendAndExpect(String toSend, String toGet)
  * Process GPS locate command into longitude and latitude string.
  * This cleaned string can be sent to be read easily.
  */
-String Gsm::processGPSString(String gpsRet)
+String Gsm::processGPSStringCrash(String gpsRet)
 {
   String longitude = "";
   String latitude = "";
@@ -132,7 +132,27 @@ String Gsm::processGPSString(String gpsRet)
   String temp2 = temp.substring(index+1);
   index2 = temp2.indexOf(',');
   latitude = temp2.substring(0,index2);
-  return "Last seen at: Longitude: " +longitude + " Latitude: " + latitude;
+  return "BIKE CRASH. Last seen at: Longitude: " +longitude + " Latitude: " + latitude;
+}
+
+/*
+ * Process GPS locate command into longitude and latitude string.
+ * This cleaned string can be sent to be read easily. Done for Theft detection
+ */
+String Gsm::processGPSStringTheft(String gpsRet)
+{
+  String longitude = "";
+  String latitude = "";
+  int index = gpsRet.indexOf(','); //first index of ,
+  String temp = gpsRet.substring(index+1); //from ehre on
+  int index2 = temp.indexOf(','); //next comma
+  longitude = temp.substring(0,index2); //+1 on index to get rid of , and no on last index for no comma
+  //get latitiude;
+  index = temp.indexOf(','); //find the next comma
+  String temp2 = temp.substring(index+1);
+  index2 = temp2.indexOf(',');
+  latitude = temp2.substring(0,index2);
+  return "BIKE STOLEN. Last seen at: Longitude: " +longitude + " Latitude: " + latitude;
 }
 
 /*** START AND STOP FUNCTIONS ***/
@@ -187,13 +207,13 @@ void Gsm::startGPS()
 /*** GPS TOOLS ***/
 
 /*
- * This function pings for theft or crash. If a theft/crash is occured, this function will send 
+ * This function pings for a crash. If a crash ihas occured, this function will send 
  * a location text with latitiude and longitude to the passed phone number at the given
  * interval. 
  * Recommended interval is 60000 ms or 1 minute
  * Best use : while(!recovereed){pingGPS();}
  */
-void Gsm::pingGPS(long interval, String phoneNumber)
+void Gsm::pingGPSCrash(long interval, String phoneNumber)
 {
   int time_start = millis();
   flushReceive(flushTime); //must flush first time try to ping
@@ -201,8 +221,30 @@ void Gsm::pingGPS(long interval, String phoneNumber)
   {
     Serial.println("AT+CGPSINF=0\r");
     String str = grabAllResponse(responseTime);
-    String message = processGPSString(str);
-    this->sendSMS(message,phoneNUmber);
+    String message = processGPSStringCrash(str);
+    this->sendSMS(message,phoneNumber);
+    flushReceive(flushTime);
+    delay(1000);
+  } 
+}
+
+/*
+ * This function pings for theft. If a theft has occured, this function will send 
+ * a location text with latitiude and longitude to the passed phone number at the given
+ * interval. 
+ * Recommended interval is 60000 ms or 1 minute
+ * Best use : while(!recovereed){pingGPS();}
+ */
+void Gsm::pingGPSTheft(long interval, String phoneNumber)
+{
+  int time_start = millis();
+  flushReceive(flushTime); //must flush first time try to ping
+  while(millis()-time_start < interval)
+  {
+    Serial.println("AT+CGPSINF=0\r");
+    String str = grabAllResponse(responseTime);
+    String message = processGPSStringTheft(str);
+    this->sendSMS(message,phoneNumber);
     flushReceive(flushTime);
     delay(1000);
   } 
