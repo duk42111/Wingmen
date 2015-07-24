@@ -58,7 +58,8 @@
 #define THEFT_THRESHOLD  	20        // threshold for MPU6050 "Motion Detection" during theft
 #define ZRMOTION_THRESHOLD 	60        // threshold for MPU6050 "Zero-motion Detection" during a crash
 #define THEFT_DETECTED  	0x41      // if the INT_STATUS register returns 0x41 theft has occured
-#define STOP_DETECTED       1
+#define MOTION_DETECTED         0x20
+#define STOP_DETECTED           0
 #define WKUP_GYR_OFF     	0x47      // sets PWR_MGMT_2 resgister to desired refresh rate (gyro DISABLED)
 #define WKUP_GYR_ON      	0x40      // sets PWR_MGMT_2 resgister to desired refresh rate (gyro ENABLED)
 
@@ -84,6 +85,7 @@ class motion
 		void brakeLight(bool signal);	      // signals MSP430 to activate brake light 			
 		void emergencyFlash(void); 	          // used in event of a crash, tells MSP430 to flash all 3 channels constantly
 		void checkForStop(void);
+                bool theftDetected(void);
 		bool motionDetected(void);
 		bool stopDetected(void);
 		bool crashDetected(void);             // returns TRUE if a crash has been detected

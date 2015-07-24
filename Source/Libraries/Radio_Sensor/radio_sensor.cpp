@@ -18,7 +18,7 @@ void Radio_Sensor::startRadioSensor()
  * When used with radio receiver, characters 'S', B' and 'H' will be expected
  * for Stop, Brake and Hazard, respectively.
  * This function only sends one message. Assumption is that it will be used in the following way:
- * WHILE(NO RESPONSE){ CONTINUALLY SEND}
+ * WHILE(!TIMEOUT){ CONTINUALLY SEND}
  */
 void Radio_Sensor::sendMessage(char action)
 {

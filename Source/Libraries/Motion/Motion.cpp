@@ -410,7 +410,7 @@ void motion::checkForStop()
   }
 }
 
-bool motion::motionDetected()
+bool motion::theftDetected()
 {
   bool theft = false;
   Wire.beginTransmission(MPU_ADDRESS);
@@ -428,6 +428,26 @@ bool motion::motionDetected()
     }
   }
   return theft;
+}
+
+bool motion::motionDetected()
+{
+  bool motion = false;
+  Wire.beginTransmission(MPU_ADDRESS);
+  Wire.write(MOT_DETECT_STATUS);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU_ADDRESS,1,true);
+  int temp = Wire.read();
+  Serial.print("MOT_DETECT_STATUS: ");Serial.print(temp, HEX); Serial.print(" | "); Serial.println(temp, BIN);
+  if(temp >= MOTION_DETECTED)
+  {
+    count++;
+    if(count > 2)
+    {
+      motion = true;
+    }
+  }
+  return motion;
 }
 
 bool motion::stopDetected()

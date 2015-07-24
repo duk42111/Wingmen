@@ -5,16 +5,13 @@
 #include <msp432.h>
 //#include <msp430.h>
 #define GSM_RST 8
-//8 for 432
-
 
 #define flushTime  15000
 #define responseTime  15000
 #define masterPhoneNumber "16144600335"
+#define lovedOneNumber "5862918433"
 
 class Gsm {
-
-	
 
 	public:
 
@@ -33,7 +30,7 @@ class Gsm {
 		 * GPS Functions
 		 *
 		 */
-		void pingTheft(long interval);
+		void pingGPS(long interval, String phoneNumber);
 
 
 		/*
@@ -48,17 +45,12 @@ class Gsm {
 		void flushReceive(long time);
 		void generateTempPass();
 
-				String grabAllResponse(long time);
-
-
-		String receiveToChar(char c);
-
 
 	private:
+		bool sendAndExpect(String toSend, String toGet);
 		int processNumSMSString(String response);
 		String processGPSString(String gpsRet);
-		//String grabAllResponse(long time);
-		bool sendAndExpect(String toSend, String toGet);
+		String grabAllResponse(long time);
+		String receiveToChar(char c);
 };
-
 #endif

@@ -2,11 +2,6 @@
 /*
  * THIS LIBRARY USES THE HARDWARE SERIAL CONNECTION ON THE MSP430/432.
  * AS A RESULT, SERIAL DEBUGGING WILL NOT WORK UNLESS SERIAL1 IS USED FOR THE GSM
- *
- *
- *
- *
- *
  */
 
 
@@ -45,6 +40,10 @@
    return readString;
  }
 
+/*
+ * Private helper function used to process the GSM response when requesting the number of text messages stored in device.
+ * Returns an int variable with the number of texts that are stored. Used to read most recent text and to check for new messages
+ */
 int Gsm::processNumSMSString(String response)
 {
   int index = response.indexOf(','); //first comma
@@ -136,19 +135,6 @@ String Gsm::processGPSString(String gpsRet)
   return "Last seen at: Longitude: " +longitude + " Latitude: " + latitude;
 }
 
-/*
- * Check change in number of texts
- */
- bool newText()
- {
- 	//get SMS
- 	//if > old, return true
- 	//return false
- 	//only if this is true do you check for an unlock or lock
-
-
- }
-
 /*** START AND STOP FUNCTIONS ***/
 
 /*
@@ -156,8 +142,6 @@ String Gsm::processGPSString(String gpsRet)
  * For MSP430, baud rate = 4800 is acceptable. For MSP432 please use 9600.
  */
 void Gsm::startGSM(int baud){
-
-	//CURRENTLY THERE IS NO WAY TO CHECK IF IT TURNED ON....SERIAL READ OK?
 
 	pinMode(GSM_RST,OUTPUT);
 	digitalWrite(GSM_RST,HIGH);
@@ -189,7 +173,6 @@ void Gsm::startGPS()
   Serial.println("AT+CGPSRST=0\r");
   Serial.println("WAIT=60\r");
   //delay(500);
-  //flushReceive(flushTime);
 }
 
 /*
@@ -198,18 +181,19 @@ void Gsm::startGPS()
  void Gsm::stopGPS()
  {
  	Serial.println("AT+CPGPSPWR=0\r");
+  delay(2000);
  }
 
 /*** GPS TOOLS ***/
 
 /*
- * This function pings for theft. If a theft is occured, this function will send 
- * a location text with latitiude and longitude to master number at the given
+ * This function pings for theft or crash. If a theft/crash is occured, this function will send 
+ * a location text with latitiude and longitude to the passed phone number at the given
  * interval. 
  * Recommended interval is 60000 ms or 1 minute
- * Best use : while(!recovereed){pingTheft();}
+ * Best use : while(!recovereed){pingGPS();}
  */
-void Gsm::pingTheft(long interval)
+void Gsm::pingGPS(long interval, String phoneNumber)
 {
   int time_start = millis();
   flushReceive(flushTime); //must flush first time try to ping
@@ -218,7 +202,7 @@ void Gsm::pingTheft(long interval)
     Serial.println("AT+CGPSINF=0\r");
     String str = grabAllResponse(responseTime);
     String message = processGPSString(str);
-    this->sendSMS(message,masterPhoneNumber);
+    this->sendSMS(message,phoneNUmber);
     flushReceive(flushTime);
     delay(1000);
   } 
@@ -248,8 +232,8 @@ bool Gsm::sendSMS(String message, String phoneNumber){
 }
 
 
-/*HELP
- * Sets global varialbe with the number of texts currently stored. Used to get "most recent"
+/*
+ * Returns int with the number of texts currently stored. Used to get most recent text and to check for incoming messages
  */
 int Gsm::getNumSMS(){
 	flushReceive(flushTime);
@@ -291,8 +275,6 @@ int Gsm::getNumSMS(){
     	return true;
     return false;
  }
-
-
 
 /*
  * Flush the receive buffer in preparation for a read. Best used before desired command
