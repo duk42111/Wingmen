@@ -4,6 +4,7 @@ TI DIY 2015
 Authors:
 Taumer Anabtawi
 William Stevers
+Tiffany Tso
 
 Contributions:
 Taumer Anabtawi - GSM Library, Radio Libraries, Main program
