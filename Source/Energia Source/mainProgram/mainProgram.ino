@@ -5,7 +5,7 @@
 #include <gsm.h>
 #include "Motion.h"
 #include <Wire.h>
-//#include <radio_sensor.h>
+#include <radio_sensor.h>
 
 /***TRIGGER VARIABLES***/
 
@@ -26,7 +26,7 @@ long crashTime = 0;
 /***DEVICE OBJECTS***/
 Gsm gsm = Gsm();
 motion accel = motion(); //MPU6050
-//Radio_Sensor radio = Radio_Sensor(); //C110L
+Radio_Sensor radio = Radio_Sensor(); //C110L
 
 void setup()
 {
@@ -44,7 +44,6 @@ void setup()
   
   theftTime = millis();
 }
-
 
 
 void loop()
@@ -73,7 +72,6 @@ void loop()
    
    if(theft)
    {
-      //digitalWrite(BLUE_LED,HIGH);
       bool retrieved = false;
       digitalWrite(BLUE_LED,HIGH);
       gsm.startGPS();
@@ -83,7 +81,7 @@ void loop()
         digitalWrite(BLUE_LED,LOW);
       } 
     }
-    /*else{
+    else{
     
       //No theft detected at this time
       //digitalWrite(GREEN_LED,LOW);
@@ -105,7 +103,7 @@ void loop()
       }
       //incase of non-unlocking text, allow for more theft reads
      theftTime = millis(); 
-    }*/
+    }
   }
   
   if(!LOCKED)
@@ -153,7 +151,7 @@ void loop()
        { 
             gsm.pingGPSCrash(60000,lovedOneNumber);
             digitalWrite(BLUE_LED,LOW);
-            //radio.sendMessage('H'); //send Hazard Light Signal
+            radio.sendMessage('H'); //send Hazard Light Signal
        } 
     }
     
@@ -164,7 +162,7 @@ void loop()
     {
        if(accel.stopDetected())
        {
-         //radio.sendMessage('B'); //send brake light message
+         radio.sendMessage('B'); //send brake light message
          stopGet = true;
          break; 
        }
@@ -184,7 +182,7 @@ void loop()
        }
        else
        { 
-         //radio.sendMessage('B');
+         radio.sendMessage('B');
          fullStop = true;   
        }
          
